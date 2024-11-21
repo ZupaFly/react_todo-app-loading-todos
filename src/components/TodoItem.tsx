@@ -21,7 +21,7 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, setTodos }) => {
   };
 
   return (
-    <div className={`todo ${todo.completed ? 'completed' : ''}`}>
+    <div className={`todo ${todo.completed ? 'completed' : ''}`} data-cy="Todo">
       <label className="todo__status-label" htmlFor={`todo-status-${todo.id}`}>
         <input
           id={`todo-status-${todo.id}`}
@@ -32,7 +32,12 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, setTodos }) => {
         />
       </label>
       <span className="todo__title">{todo.title}</span>
-      <button type="button" className="todo__remove" onClick={handleDelete}>
+      <button
+        type="button"
+        className="todo__remove"
+        onClick={handleDelete}
+        data-cy="TodoDelete"
+      >
         ×
       </button>
     </div>

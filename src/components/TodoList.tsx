@@ -10,7 +10,7 @@ interface TodoListProps {
 
 const TodoList: React.FC<TodoListProps> = ({ todos, loading, setTodos }) => {
   return (
-    <section className="todoapp__main">
+    <section className="todoapp__main" data-cy="TodoList">
       {loading ? (
         <div>
           <div className="loader"></div>
