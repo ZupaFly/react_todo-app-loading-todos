@@ -12,7 +12,6 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
-  // const [newTodoTitle, setNewTodoTitle] = useState('');
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -85,7 +84,9 @@ export const App: React.FC = () => {
 
   return (
     <div className="todoapp">
-      <h1 className="todoapp__title">todos</h1>
+      <h1 className="todoapp__title" data-cy="TodoAppTitle">
+        todos
+      </h1>
       <div className="todoapp__content">
         <header className="todoapp__header">
           <button
@@ -93,6 +94,7 @@ export const App: React.FC = () => {
             aria-label="Mark all as completed"
             className={`todoapp__toggle-all ${todos.every(todo => todo.completed) ? 'active' : ''}`}
             onClick={handleToggleAll}
+            data-cy="ToggleAllButton"
           />
           <TodoForm onAddTodo={handleAddTodo} />
         </header>

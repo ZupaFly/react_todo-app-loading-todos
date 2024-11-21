@@ -16,10 +16,9 @@ const Footer: React.FC<FooterProps> = ({
 }) => {
   return (
     <footer className="todoapp__footer" data-cy="Footer">
-      <span
-        className="todo-count"
-        data-cy="TodosCounter"
-      >{`${todos.filter(todo => !todo.completed).length} items left`}</span>
+      <span className="todo-count" data-cy="TodosCounter">
+        {`${todos.filter(todo => !todo.completed).length} items left`}
+      </span>
       <nav className="filter" data-cy="Filter">
         {['all', 'active', 'completed'].map(filterType => (
           <button

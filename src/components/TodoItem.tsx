@@ -25,18 +25,21 @@ const TodoItem: React.FC<TodoItemProps> = ({ todo, setTodos }) => {
       <label className="todo__status-label" htmlFor={`todo-status-${todo.id}`}>
         <input
           id={`todo-status-${todo.id}`}
-          type="checkbox"
+          data-cy="TodoStatus"
           className="todo__status"
+          type="checkbox"
           checked={todo.completed}
           onChange={handleToggle}
         />
       </label>
-      <span className="todo__title">{todo.title}</span>
+      <span className="todo__title" data-cy="TodoTitle">
+        {todo.title}
+      </span>
       <button
         type="button"
         className="todo__remove"
-        onClick={handleDelete}
         data-cy="TodoDelete"
+        onClick={handleDelete}
       >
         ×
       </button>
