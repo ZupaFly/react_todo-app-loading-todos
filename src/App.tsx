@@ -10,6 +10,7 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState('all');
+  const [newTodoTitle, setNewTodoTitle] = useState('');
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -20,7 +21,7 @@ export const App: React.FC = () => {
         const todosFromApi = await getTodos();
 
         setTodos(todosFromApi);
-      } catch (apiError) {
+      } catch {
         setError('Unable to load todos');
       } finally {
         setLoading(false);
@@ -41,6 +42,35 @@ export const App: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [error]);
+
+  const handleAddTodo = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (newTodoTitle.trim()) {
+      setTodos([
+        ...todos,
+        {
+          id: Date.now(),
+          title: newTodoTitle.trim(),
+          completed: false,
+          userId: 0,
+        },
+      ]);
+      setNewTodoTitle('');
+    }
+  };
+
+  const handleToggleAll = () => {
+    const allCompleted = todos.every(todo => todo.completed);
+
+    setTodos(todos.map(todo => ({ ...todo, completed: !allCompleted })));
+  };
+
+  const handleFilterChange = (newFilter: string) => setFilter(newFilter);
+
+  const handleClearCompleted = () => {
+    setTodos(todos.filter(todo => !todo.completed));
+  };
 
   const filteredTodos = todos.filter(todo => {
     if (filter === 'active') {
@@ -66,16 +96,20 @@ export const App: React.FC = () => {
         <header className="todoapp__header">
           <button
             type="button"
+            aria-label="Mark all as completed"
             className={`todoapp__toggle-all ${todos.every(todo => todo.completed) ? 'active' : ''}`}
+            onClick={handleToggleAll}
             data-cy="ToggleAllButton"
           />
 
-          <form>
+          <form onSubmit={handleAddTodo}>
             <input
               data-cy="NewTodoField"
               type="text"
               className="todoapp__new-todo"
               placeholder="What needs to be done?"
+              value={newTodoTitle}
+              onChange={e => setNewTodoTitle(e.target.value)}
             />
           </form>
         </header>
@@ -100,6 +134,15 @@ export const App: React.FC = () => {
                     type="checkbox"
                     className="todo__status"
                     checked={todo.completed}
+                    onChange={() => {
+                      setTodos(
+                        todos.map(t =>
+                          t.id === todo.id
+                            ? { ...t, completed: !t.completed }
+                            : t,
+                        ),
+                      );
+                    }}
                   />
                 </label>
 
@@ -111,14 +154,10 @@ export const App: React.FC = () => {
                   type="button"
                   className="todo__remove"
                   data-cy="TodoDelete"
+                  onClick={() => setTodos(todos.filter(t => t.id !== todo.id))}
                 >
                   ×
                 </button>
-
-                <div data-cy="TodoLoader" className="modal overlay">
-                  <div className="modal-background has-background-white-ter" />
-                  <div className="loader" />
-                </div>
               </div>
             ))
           )}
@@ -131,32 +170,15 @@ export const App: React.FC = () => {
             </span>
 
             <nav className="filter" data-cy="Filter">
-              <a
-                href="#/"
-                className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
-                data-cy="FilterLinkAll"
-                onClick={() => setFilter('all')}
-              >
-                All
-              </a>
-
-              <a
-                href="#/active"
-                className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
-                data-cy="FilterLinkActive"
-                onClick={() => setFilter('active')}
-              >
-                Active
-              </a>
-
-              <a
-                href="#/completed"
-                className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
-                data-cy="FilterLinkCompleted"
-                onClick={() => setFilter('completed')}
-              >
-                Completed
-              </a>
+              {['all', 'active', 'completed'].map(filterType => (
+                <button
+                  key={filterType}
+                  className={`filter__link ${filter === filterType ? 'selected' : ''}`}
+                  onClick={() => handleFilterChange(filterType)}
+                >
+                  {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
+                </button>
+              ))}
             </nav>
 
             <button
@@ -164,6 +186,7 @@ export const App: React.FC = () => {
               className="todoapp__clear-completed"
               data-cy="ClearCompletedButton"
               disabled={todos.every(todo => !todo.completed)}
+              onClick={handleClearCompleted}
             >
               Clear completed
             </button>
@@ -171,18 +194,20 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <div
-        data-cy="ErrorNotification"
-        className={`notification is-danger is-light has-text-weight-normal ${error ? '' : 'hidden'}`} // Додаємо клас hidden для приховування
-      >
-        <button
-          data-cy="HideErrorButton"
-          type="button"
-          className="delete"
-          onClick={() => setError(null)}
-        />
-        {error}
-      </div>
+      {error && (
+        <div
+          data-cy="ErrorNotification"
+          className="notification is-danger is-light has-text-weight-normal"
+        >
+          <button
+            data-cy="HideErrorButton"
+            type="button"
+            className="delete"
+            onClick={() => setError(null)}
+          />
+          {error}
+        </div>
+      )}
     </div>
   );
 };
