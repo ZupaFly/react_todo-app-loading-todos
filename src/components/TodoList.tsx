@@ -14,7 +14,7 @@ const TodoList: React.FC<TodoListProps> = ({ todos, loading, setTodos }) => {
       {loading ? (
         <div>
           <div className="loader"></div>
-          <div className="loading">Loading ToDo&apos;s. Please wait...</div>
+          <div className="loading">Loading...</div>
         </div>
       ) : (
         todos.map(todo => (

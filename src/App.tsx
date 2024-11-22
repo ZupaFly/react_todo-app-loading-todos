@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { getTodos } from './api/todos';
 import { USER_ID } from './api/todos';
 import { Todo } from './types/Todo';
+import { FilterType } from './types/Filter';
 import TodoForm from './components/TodoForm';
 import TodoList from './components/TodoList';
 import Footer from './components/Footer';
 import ErrorNotification from './components/ErrorNotification';
+import classNames from 'classnames';
 
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<FilterType>(FilterType.All);
 
   useEffect(() => {
     const loadTodos = async () => {
@@ -64,18 +66,18 @@ export const App: React.FC = () => {
     setTodos(todos.map(todo => ({ ...todo, completed: !allCompleted })));
   };
 
-  const handleFilterChange = (newFilter: string) => setFilter(newFilter);
+  const handleFilterChange = (newFilter: FilterType) => setFilter(newFilter);
 
   const handleClearCompleted = () => {
     setTodos(todos.filter(todo => !todo.completed));
   };
 
   const filteredTodos = todos.filter(todo => {
-    if (filter === 'active') {
+    if (filter === FilterType.Active) {
       return !todo.completed;
     }
 
-    if (filter === 'completed') {
+    if (filter === FilterType.Completed) {
       return todo.completed;
     }
 
@@ -92,7 +94,9 @@ export const App: React.FC = () => {
           <button
             type="button"
             aria-label="Mark all as completed"
-            className={`todoapp__toggle-all ${todos.every(todo => todo.completed) ? 'active' : ''}`}
+            className={classNames('todoapp__toggle-all', {
+              active: todos.every(todo => todo.completed),
+            })}
             onClick={handleToggleAll}
             data-cy="ToggleAllButton"
           />

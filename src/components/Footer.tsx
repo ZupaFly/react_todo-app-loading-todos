@@ -1,10 +1,12 @@
 import React from 'react';
+import classNames from 'classnames';
 import { Todo } from '../types/Todo';
+import { FilterType } from '../types/Filter';
 
 interface FooterProps {
   todos: Todo[];
-  filter: string;
-  onFilterChange: (newFilter: string) => void;
+  filter: FilterType;
+  onFilterChange: (newFilter: FilterType) => void;
   onClearCompleted: () => void;
 }
 
@@ -14,27 +16,34 @@ const Footer: React.FC<FooterProps> = ({
   onFilterChange,
   onClearCompleted,
 }) => {
+  const activeTodoCount = todos.filter(todo => !todo.completed).length;
+  const hasCompletedTodos = todos.some(todo => todo.completed);
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
-        {`${todos.filter(todo => !todo.completed).length} items left`}
+        {`${activeTodoCount} items left`}
       </span>
+
       <nav className="filter" data-cy="Filter">
-        {['all', 'active', 'completed'].map(filterType => (
+        {Object.values(FilterType).map(filterType => (
           <button
             key={filterType}
-            className={`filter__link ${filter === filterType ? 'selected' : ''}`}
+            className={classNames('filter__link', {
+              selected: filter === filterType,
+            })}
             onClick={() => onFilterChange(filterType)}
           >
             {filterType.charAt(0).toUpperCase() + filterType.slice(1)}
           </button>
         ))}
       </nav>
+
       <button
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        disabled={todos.every(todo => !todo.completed)}
+        disabled={!hasCompletedTodos}
         onClick={onClearCompleted}
       >
         Clear completed
