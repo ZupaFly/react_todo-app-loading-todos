@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React from 'react';
 
 interface ErrorNotificationProps {
@@ -9,7 +10,15 @@ const ErrorNotification: React.FC<ErrorNotificationProps> = ({
   error,
   onClose,
 }) => (
-  <div data-cy="ErrorNotification" className="notification is-danger is-light">
+  <div
+    data-cy="ErrorNotification"
+    className={classNames(
+      'notification is-danger is-ligth has-text-weight-normal',
+      {
+        hidden: !error,
+      },
+    )}
+  >
     <button
       data-cy="HideErrorButton"
       type="button"
